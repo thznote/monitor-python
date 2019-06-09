@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="硬件实时监控,CPU,内存,磁盘,网络">
+    <meta name="author" content="张金龙">
+    <title>硬件实时监控</title>
+    <link href="{{ static_url('dist/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ static_url('css/dashboard.css') }}" rel="stylesheet">
+    <script src="{{ static_url('js/analogClock.js') }}"></script>
+    <script src="https://cdn.bootcss.com/echarts/4.2.1/echarts.min.js"></script>
+    <!--头部数据块-->
+    {% block head %}{% end %}
+</head>
+
+<body>
+<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">硬件实时监控</a>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">
+                            系统监控
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/log/">
+                            日志统计
+                        </a>
+                    </li>
+                </ul>
+                <div class="col-md-12">
+                    <div class="alert alert-info">开机时间：{{ handler.started }}</div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card text-white bg-dark mb-3">
+                        <div class="card-header">当前时间</div>
+                        <div class="card-body" id="clock"></div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card text-white bg-dark mb-3">
+                        <div class="card-header">用户信息</div>
+                        <div class="card-body">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                <tr class="text-primary">
+                                    <th class="text-center" colspan="2">
+                                        登录用户信息
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for v in handler.users %}
+                                <tr>
+                                    <td class="text-primary">
+                                        登录账号：<br>
+                                        登录终端：<br>
+                                        登录主机：<br>
+                                        登录时间：
+                                    </td>
+                                    <td>
+                                        {{ v['name'] }}<br>
+                                        {{ v['terminal'] }}<br>
+                                        {{ v['host'] }}<br>
+                                        {{ v['started'] }}
+                                    </td>
+                                </tr>
+                                {% end %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h5>{{ data['title'] }}</h5>
+            </div>
+            <!--变化的部分放在该数据块中-->
+            {% block content %}{% end %}
+            <div class="jumbotron foot-section">
+                <hr class="my-4">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <img data-src="{{ static_url('images/face.png') }}"
+                                 class="lazyload blur-up img-fluid mx-auto d-block">
+                        </div>
+                        <div class="col-md-4">
+                            <h5>张金龙</h5>
+                            <p class="info-text">— 人生苦短，我用Python！</p>
+                            <p class="info-text">微信：13700632835</p>
+                            <p class="info-text">手机：13700632835</p>
+                            <p class="info-text">邮箱：1780316635@qq.com</p>
+                            <p class="info-text">编程爱好者，多年丰富的项目经验，擅长python、php、golang、centos、reactnative等技术。</p>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p class="text-center info-text">站长微信</p>
+                                    <img data-src="{{ static_url('images/weixin.jpg') }}"
+                                         class="lazyload blur-up img-fluid mx-auto d-block">
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="text-center info-text">站长QQ</p>
+                                    <img data-src="{{ static_url('images/qq.jpg') }}"
+                                         class="lazyload blur-up img-fluid mx-auto d-block">
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="text-center info-text">python问答QQ群</p>
+                                    <img data-src="{{ static_url('images/qq_group.jpg') }}"
+                                         class="lazyload blur-up img-fluid mx-auto d-block">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <div class="container">
+                    <ul class="list-inline text-center">
+                        <li class="info-text"><a href="http://www.miibeian.gov.cn/" target="_blank">滇ICP备17011280号</a>
+                        </li>
+                        <li class="info-text">© 2018-2019 张金龙[python拓荒者]</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script src="https://cdn.bootcss.com/lazysizes/5.1.0/lazysizes.min.js"></script>
+<script src="{{ static_url('js/monitor.js') }}"></script>
+<script>
+    AnalogClock("clock", new AnalogClockOption(200, "#eee", "#333"));
+</script>
+<!--底部数据块-->
+{% block foot %}{% end %}
+</body>
+</html>

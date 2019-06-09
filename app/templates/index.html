@@ -1,0 +1,199 @@
+<!--继承布局文件-->
+{% extends "layout.html" %}
+
+{% block head %}
+<script src="{{ static_url('echarts-liquidfill/echarts-liquidfill.min.js') }}"></script>
+{% end %}
+
+{% block content %}
+<!--内容部分-->
+<div class="row">
+    <div class="col-md-12" id="monitor_status"></div>
+    <div class="col-md-12">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">CPU信息</div>
+            <div class="card-body">
+                <div class="row">
+                    <!--栅格系统，12，打出2列表，6、6-->
+                    <div class="col-md-6 pad-right">
+                        <div class="border border-white">{% raw data['cpu_liquid'] %}</div>
+                    </div>
+                    <div class="col-md-6 pad-left">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                            <th class="text-center" colspan="2">
+                                所有CPU使用率
+                            </th>
+                            </thead>
+                            <tbody id="tb_cpu_per">
+                            {% for k,v in enumerate(data['cpu_info']['percent_per']) %}
+                            <tr>
+                                <td class="text-primary" style="width: 30%">
+                                    CPU{{ k }}
+                                </td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated{{ handler.progress_status(v) }}"
+                                             role="progressbar" aria-valuenow="{{ v }}" aria-valuemin="0"
+                                             aria-valuemax="100" style="width: {{ v }}%">{{ v }}%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% end %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">内存/交换分区信息</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 pad-right">
+                        <div class="border border-white">{% raw data['mem_gauge'] %}</div>
+                        <table class="table table-sm table-bordered">
+                            <tr>
+                                <td class="text-primary" style="width: 30%">使用率（%）</td>
+                                <td id="mem_percent" class="text-danger">{{ data['mem_info']['percent'] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-primary" style="width: 30%">总量（GB）</td>
+                                <td id="mem_total" class="text-danger">{{ data['mem_info']['total'] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-primary" style="width: 30%">使用量（GB）</td>
+                                <td id="mem_used" class="text-danger">{{ data['mem_info']['used'] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-primary" style="width: 30%">剩余量（GB）</td>
+                                <td id="mem_free" class="text-danger">{{ data['mem_info']['free'] }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6 pad-left">
+                        <div class="border border-white">{% raw data['swap_gauge'] %}</div>
+                        <table class="table table-sm table-bordered">
+                            <tr>
+                                <td class="text-primary" style="width: 30%">使用率（%）</td>
+                                <td id="swap_percent" class="text-danger">{{ data['swap_info']['percent'] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-primary" style="width: 30%">总量（GB）</td>
+                                <td id="swap_total" class="text-danger">{{ data['swap_info']['total'] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-primary" style="width: 30%">使用量（GB）</td>
+                                <td id="swap_used" class="text-danger">{{ data['swap_info']['used'] }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-primary" style="width: 30%">剩余量（GB）</td>
+                                <td id="swap_free" class="text-danger">{{ data['swap_info']['free'] }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">网络信息</div>
+            <div class="card-body">
+                <div class="row">
+                    {% for v in data['net_pie'] %}
+                    <div class="col-md-12">
+                        <div class="border border-white">{% raw v %}</div>
+                    </div>
+                    {% end %}
+                    <div class="col-md-12">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                            <tr class="text-primary">
+                                <th style="width: 20%">网卡名称</th>
+                                <th style="width: 10%">发送字节</th>
+                                <th style="width: 10%">接收字节</th>
+                                <th style="width: 10%">发送包数</th>
+                                <th style="width: 10%">接收包数</th>
+                                <th style="width: 10%">协议地址族</th>
+                                <th style="width: 10%">IP地址</th>
+                                <th style="width: 10%">子网掩码</th>
+                                <th style="width: 10%">广播地址</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tb_net">
+                            {% for v in data['net_info'] %}
+                            <tr>
+                                <td>{{ v['name'] }}</td>
+                                <td class="text-danger">{{ v['bytes_sent'] }}</td>
+                                <td class="text-danger">{{ v['bytes_recv'] }}</td>
+                                <td class="text-danger">{{ v['packets_sent'] }}</td>
+                                <td class="text-danger">{{ v['packets_recv'] }}</td>
+                                <td>{{ v['family'] }}</td>
+                                <td>{{ v['address'] }}</td>
+                                <td>{{ v['netmask'] }}</td>
+                                <td>
+                                    {% if v['broadcast'] %}
+                                    {{ v['broadcast'] }}
+                                    {% else %}
+                                    无
+                                    {% end %}
+                                </td>
+                            </tr>
+                            {% end %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">磁盘使用信息</div>
+            <div class="card-body">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                    <tr class="text-primary">
+                        <th style="width: 10%">设备名称</th>
+                        <th style="width: 10%">挂载点</th>
+                        <th style="width: 10%">文件系统类型</th>
+                        <th style="width: 10%">操作选项</th>
+                        <th style="width: 10%">总量（GB）</th>
+                        <th style="width: 10%">使用量（GB）</th>
+                        <th style="width: 10%">剩余量（GB）</th>
+                        <th style="width: 30%">使用量（%）</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tb_disk">
+                    {% for v in data['disk_info'] %}
+                    <tr>
+                        <td>{{ v['device'] }}</td>
+                        <td>{{ v['mountpoint'] }}</td>
+                        <td>{{ v['fstype'] }}</td>
+                        <td>{{ v['opts'] }}</td>
+                        <td class="text-danger">{{ v['used']['total'] }}GB</td>
+                        <td class="text-danger">{{ v['used']['used'] }}GB</td>
+                        <td class="text-danger">{{ v['used']['free'] }}GB</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated{{ handler.progress_status(v['used']['percent']) }}"
+                                     role="progressbar" aria-valuenow="{{ v['used']['percent'] }}" aria-valuemin="0"
+                                     aria-valuemax="100"
+                                     style="width: {{ v['used']['percent'] }}%">{{ v['used']['percent'] }}%
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% end %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+

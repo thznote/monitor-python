@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="btn-group" role="group">
+            <a class="btn btn-success" href="/log/?id=1">1小时内</a>
+            <a class="btn btn-info" href="/log/?id=2">24小时内</a>
+            <a class="btn btn-primary" href="/log/?id=3">1月内</a>
+        </div>
+        <hr>
+    </div>
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                {% raw data['line_cpu'] %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                {% raw data['line_mem'] %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                {% raw data['line_swap'] %}
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
